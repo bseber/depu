@@ -1,11 +1,11 @@
 const childProcess = require("child_process");
 
-module.exports = async function updateDependencies() {
+module.exports = async function updateDependencies(mode = "minor") {
     const data = await getOutdated();
     const dependencies = [];
     for (const entry of data) {
-        const latestMinor = await getLatestMinorVersion(entry.moduleName, entry.wanted);
-        dependencies.push({ ...entry, install: latestMinor });
+        const install = await getToInstallVersion(mode, entry);
+        dependencies.push({ ...entry, install });
     }
     const command = dependencies.reduce((command, info) => `${command} ${info.moduleName}@${info.install}`, 'npm install --save');
     await exec(command);
@@ -19,9 +19,15 @@ function getOutdated() {
         .then(data => Object.entries(data).map(([moduleName, info]) => ({ moduleName, ...info })));
 }
 
-function getLatestMinorVersion(moduleName, wantedVersion) {
-    const major = wantedVersion.split('.')[0];
-    return exec(`npm view ${moduleName}@${major} version --json`)
+function getToInstallVersion(mode = "minor", entry) {
+    if (mode === "major") {
+        return Promise.resolve(entry.latest);
+    }
+
+    const major = entry.wanted.split('.')[0];
+    const minor = entry.wanted.split('.')[1];
+    const version = mode === "minor" ? major : `${major}.${minor}.x`;
+    return exec(`npm view ${entry.moduleName}@${version} version --json`)
         .then(data => {
             const versions = JSON.parse(data);
             return versions[versions.length - 1];
