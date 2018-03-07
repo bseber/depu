@@ -1,4 +1,4 @@
-const childProcess = require("child_process");
+const exec = require("./shell-exec");
 
 module.exports = async function updateDependencies(mode = "minor") {
     const data = await getOutdated();
@@ -33,12 +33,3 @@ function getToInstallVersion(mode = "minor", entry) {
             return versions[versions.length - 1];
         });
 }
-
-function exec(command) {
-    return new Promise((resolve, reject) => {
-        console.log('exec: ', command);
-        const child = childProcess.exec(command);
-        child.stdout.on("data", data => resolve(data));
-    });
-}
-
