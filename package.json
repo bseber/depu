@@ -10,6 +10,6 @@
   "author": "Benjamin Seber <seber@synyx.de> (https://www.synyx.de)",
   "license": "MIT",
   "dependencies": {
-    "babel-core": "5.8.25"
+    "babel-core": "^5.8.38"
   }
 }
