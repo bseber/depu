@@ -1,6 +1,6 @@
 const childProcess = require("child_process");
 
-async function updateDependencies() {
+!(async function updateDependencies() {
     const data = await getOutdated();
     const dependencies = [];
     for (const entry of data) {
@@ -11,8 +11,7 @@ async function updateDependencies() {
     await exec(command);
     await exec("git commit -am 'updated dependencies'");
     console.log ('succesfully updated modules');
-}
-updateDependencies();
+}());
 
 function getOutdated() {
     return exec("npm outdated --depth=0 --json")
