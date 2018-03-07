@@ -1,0 +1,12 @@
+{
+  "name": "depu",
+  "version": "0.0.0",
+  "description": "automatically update your dependencies",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Benjamin Seber <seber@synyx.de> (https://www.synyx.de)",
+  "license": "MIT"
+}
