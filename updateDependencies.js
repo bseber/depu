@@ -12,8 +12,12 @@ module.exports = async function updateDependencies(mode = "minor") {
             dependencies.push({ ...entry, install });
         }
     }
-    await exec(dependencies.reduce((command, info) => `${command} ${info.moduleName}@${info.install}`, 'npm install --save'));
-    await exec(devDependencies.reduce((command, info) => `${command} ${info.moduleName}@${info.install}`, 'npm install --save-dev'));
+    if (dependencies.length !== 0) {
+        await exec(dependencies.reduce((command, info) => `${command} ${info.moduleName}@${info.install}`, 'npm install --save'));
+    }
+    if (devDependencies.length !== 0) {
+        await exec(devDependencies.reduce((command, info) => `${command} ${info.moduleName}@${info.install}`, 'npm install --save-dev'));
+    }
     await exec("git commit -am 'updated dependencies'");
     console.log ('succesfully updated modules');
 };
