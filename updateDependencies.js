@@ -18,8 +18,10 @@ module.exports = async function updateDependencies(mode = "minor") {
     if (devDependencies.length !== 0) {
         await exec(devDependencies.reduce((command, info) => `${command} ${info.moduleName}@${info.install}`, 'npm install --save-dev'));
     }
-    await exec("git commit -am 'updated dependencies'");
-    console.log ('succesfully updated modules');
+    if (dependencies.length !== 0 || devDependencies.length !== 0) {
+        await exec("git commit -am 'updated dependencies'");
+        console.log ('succesfully updated modules');
+    }
 };
 
 function getOutdated() {
