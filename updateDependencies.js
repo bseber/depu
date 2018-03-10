@@ -5,11 +5,13 @@ module.exports = async function updateDependencies(config) {
     const dependencies = [];
     const devDependencies = [];
     for (const entry of data) {
-        const install = await getToInstallVersion(mode, entry);
-        if (entry.type === "devDependencies") {
-            devDependencies.push({ ...entry, install });
-        } else {
-            dependencies.push({ ...entry, install });
+        if (!config.prefix || entry.moduleName.startsWith(config.prefix)) {
+            const install = await getToInstallVersion(config, entry);
+            if (entry.type === "devDependencies") {
+                devDependencies.push({ ...entry, install });
+            } else {
+                dependencies.push({ ...entry, install });
+            }
         }
     }
     if (dependencies.length !== 0) {

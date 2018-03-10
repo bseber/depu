@@ -11,7 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "babel-core": "^6.26.0",
-    "has-flag": "3.0.0"
+    "has-flag": "3.0.0",
+    "minimist": "1.2.0"
   },
   "devDependencies": {
     "chalk": "^1.1.3"
