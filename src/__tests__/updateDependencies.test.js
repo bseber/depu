@@ -1,12 +1,13 @@
 jest.mock("../shell-exec", () => jest.fn((/*command*/) => Promise.resolve()));
 
+const semver = require("semver");
 const exec = require("../shell-exec");
 const updateDependencies = require("../updateDependencies");
 
 describe("updateDependencies", () => {
   // eslint-disable-next-line jest/no-hooks
   afterEach(() => {
-    exec.mockClear();
+    jest.resetAllMocks();
   });
 
   it("does nothing when there are no dependencies to update", () => {
@@ -257,6 +258,34 @@ describe("updateDependencies", () => {
     expect(mockCalls[2][0]).toEqual(
       "npm install --save @myNamespace/moduleA@2.3.0",
     );
+  });
+
+  it("ignores dependencies with non valid semver versions", async () => {
+    expect.assertions(3);
+    jest.spyOn(semver, "valid").mockReturnValue(false);
+
+    const outdatedResponse = {
+      moduleB: {
+        latest: "4.0.0",
+        wanted: "linked",
+        type: "dependencies",
+      },
+    };
+    exec.mockImplementation(command => {
+      if (/^npm outdated/.test(command)) {
+        return resolveExec(JSON.stringify(outdatedResponse));
+      }
+      return Promise.resolve();
+    });
+
+    const config = {
+      mode: "minor",
+    };
+
+    await updateDependencies(config);
+    expect(exec).toHaveBeenCalledTimes(1);
+    expect(semver.valid).toHaveBeenCalledTimes(1);
+    expect(semver.valid).toHaveBeenCalledWith("linked");
   });
 
   function resolveExec(stdout) {

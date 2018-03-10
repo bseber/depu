@@ -1,3 +1,4 @@
+const semver = require("semver");
 const logger = require("./logger");
 const exec = require("./shell-exec");
 
@@ -6,12 +7,14 @@ module.exports = async function updateDependencies(config) {
   const dependencies = [];
   const devDependencies = [];
   for (const entry of data) {
-    if (!config.prefix || entry.moduleName.startsWith(config.prefix)) {
-      const install = await getToInstallVersion(config, entry);
-      if (entry.type === "devDependencies") {
-        devDependencies.push({ ...entry, install });
-      } else {
-        dependencies.push({ ...entry, install });
+    if (semver.valid(entry.wanted)) {
+      if (!config.prefix || entry.moduleName.startsWith(config.prefix)) {
+        const install = await getToInstallVersion(config, entry);
+        if (entry.type === "devDependencies") {
+          devDependencies.push({ ...entry, install });
+        } else {
+          dependencies.push({ ...entry, install });
+        }
       }
     }
   }
