@@ -67,8 +67,8 @@ async function getToInstallVersion(config, entry) {
     return Promise.resolve(entry.latest);
   }
 
-  const major = entry.wanted.split(".")[0];
-  const minor = entry.wanted.split(".")[1];
+  const major = semver.major(entry.wanted);
+  const minor = semver.minor(entry.wanted);
   const version = mode === "minor" ? major : `${major}.${minor}.x`;
   const { stdout: response } = await exec(
     `npm view ${entry.moduleName}@${version} version --json`,
