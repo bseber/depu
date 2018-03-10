@@ -38,7 +38,7 @@ module.exports = async function updateDependencies(config) {
 };
 
 async function getOutdated() {
-  const response = await exec("npm outdated --depth=0 -l --json");
+  const { stdout: response } = await exec("npm outdated --depth=0 -l --json");
   const data = JSON.parse(response);
   return Object.entries(data).map(([moduleName, info]) => ({
     moduleName,
@@ -56,7 +56,7 @@ async function getToInstallVersion(config, entry) {
   const major = entry.wanted.split(".")[0];
   const minor = entry.wanted.split(".")[1];
   const version = mode === "minor" ? major : `${major}.${minor}.x`;
-  const response = await exec(
+  const { stdout: response } = await exec(
     `npm view ${entry.moduleName}@${version} version --json`,
   );
   const versions = JSON.parse(response);

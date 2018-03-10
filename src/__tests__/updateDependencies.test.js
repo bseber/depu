@@ -43,19 +43,18 @@ describe("updateDependencies", () => {
       moduleB: ["1.0.0"],
       devModule: ["42.0.0", "42.0.1"],
     };
+
     exec.mockImplementation(command => {
       if (/^npm outdated/.test(command)) {
-        return Promise.resolve(JSON.stringify(outdatedResponse));
+        return resolveExec(JSON.stringify(outdatedResponse));
       } else if (/^npm view/.test(command)) {
-        let data = {};
         if (/moduleA/.test(command)) {
-          data = viewResponse.moduleA;
+          return resolveExec(JSON.stringify(viewResponse.moduleA));
         } else if (/moduleB/.test(command)) {
-          data = viewResponse.moduleB;
+          return resolveExec(JSON.stringify(viewResponse.moduleB));
         } else if (/devModule/.test(command)) {
-          data = viewResponse.devModule;
+          return resolveExec(JSON.stringify(viewResponse.devModule));
         }
-        return Promise.resolve(JSON.stringify(data));
       }
       return Promise.resolve();
     });
@@ -103,17 +102,15 @@ describe("updateDependencies", () => {
     };
     exec.mockImplementation(command => {
       if (/^npm outdated/.test(command)) {
-        return Promise.resolve(JSON.stringify(outdatedResponse));
+        return resolveExec(JSON.stringify(outdatedResponse));
       } else if (/^npm view/.test(command)) {
-        let data = {};
         if (/moduleA/.test(command)) {
-          data = viewResponse.moduleA;
+          return resolveExec(JSON.stringify(viewResponse.moduleA));
         } else if (/moduleB/.test(command)) {
-          data = viewResponse.moduleB;
+          return resolveExec(JSON.stringify(viewResponse.moduleB));
         } else if (/devModule/.test(command)) {
-          data = viewResponse.devModule;
+          return resolveExec(JSON.stringify(viewResponse.devModule));
         }
-        return Promise.resolve(JSON.stringify(data));
       }
       return Promise.resolve();
     });
@@ -156,7 +153,7 @@ describe("updateDependencies", () => {
     };
     exec.mockImplementation(command => {
       if (/^npm outdated/.test(command)) {
-        return Promise.resolve(JSON.stringify(outdatedResponse));
+        return resolveExec(JSON.stringify(outdatedResponse));
       }
       return Promise.resolve();
     });
@@ -203,17 +200,15 @@ describe("updateDependencies", () => {
     };
     exec.mockImplementation(command => {
       if (/^npm outdated/.test(command)) {
-        return Promise.resolve(JSON.stringify(outdatedResponse));
+        return resolveExec(JSON.stringify(outdatedResponse));
       } else if (/^npm view/.test(command)) {
-        let data = {};
         if (/moduleA/.test(command)) {
-          data = viewResponse.moduleA;
+          return resolveExec(JSON.stringify(viewResponse.moduleA));
         } else if (/moduleB/.test(command)) {
-          data = viewResponse.moduleB;
+          return resolveExec(JSON.stringify(viewResponse.moduleB));
         } else if (/devModule/.test(command)) {
-          data = viewResponse.devModule;
+          return resolveExec(JSON.stringify(viewResponse.devModule));
         }
-        return Promise.resolve(JSON.stringify(data));
       }
       return Promise.resolve();
     });
@@ -233,4 +228,8 @@ describe("updateDependencies", () => {
       "npm install --save @myNamespace/moduleA@2.3.0",
     );
   });
+
+  function resolveExec(stdout) {
+    return Promise.resolve({ stdout });
+  }
 });
