@@ -1,3 +1,4 @@
+jest.mock("../logger");
 jest.mock("../shell-exec", () => jest.fn((/*command*/) => Promise.resolve()));
 
 const semver = require("semver");
