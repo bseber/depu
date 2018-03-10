@@ -1,3 +1,4 @@
+const logger = require("./logger");
 const exec = require("./shell-exec");
 
 module.exports = async function updateDependencies(config) {
@@ -32,7 +33,7 @@ module.exports = async function updateDependencies(config) {
   }
   if (dependencies.length !== 0 || devDependencies.length !== 0) {
     await exec("git commit -am 'updated dependencies'");
-    console.log("succesfully updated modules");
+    logger.info("succesfully updated modules");
   }
 };
 
