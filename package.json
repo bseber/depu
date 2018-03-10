@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "automatically update your dependencies",
   "main": "src/index.js",
+  "bin": "./bin/cli.js",
   "scripts": {
     "lint": "eslint src",
     "test": "jest"
