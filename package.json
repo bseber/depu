@@ -11,9 +11,6 @@
   "author": "Benjamin Seber <seber@synyx.de> (https://www.synyx.de)",
   "license": "MIT",
   "dependencies": {
-    "@types/bluebird": "2.0.28",
-    "@types/node": "7.0.38",
-    "babel-core": "^6.26.0",
     "has-flag": "3.0.0",
     "minimist": "1.2.0"
   },
