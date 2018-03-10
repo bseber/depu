@@ -12,15 +12,16 @@
   "author": "Benjamin Seber <seber@synyx.de> (https://www.synyx.de)",
   "license": "MIT",
   "dependencies": {
+    "columnify": "1.5.4",
     "has-flag": "3.0.0",
     "minimist": "1.2.0",
     "semver": "5.5.0"
   },
   "devDependencies": {
-    "chalk": "1.1.3",
+    "chalk": "2.3.2",
     "eslint": "4.18.2",
     "eslint-config-prettier": "2.9.0",
-    "eslint-plugin-jest": "21.13.0",
+    "eslint-plugin-jest": "21.14.0",
     "eslint-plugin-prettier": "2.6.0",
     "jest": "22.4.2",
     "prettier": "1.11.1"

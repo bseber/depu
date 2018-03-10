@@ -36,7 +36,7 @@ module.exports = async function updateDependencies(config) {
   }
   if (dependencies.length !== 0 || devDependencies.length !== 0) {
     await exec("git commit -am 'updated dependencies'");
-    logger.info("succesfully updated modules");
+    return Promise.resolve([...dependencies, ...devDependencies]);
   }
 };
 
