@@ -1,4 +1,5 @@
 const hasFlag = require("has-flag");
+const parseArgs = require("minimist");
 const updateDependencies = require("./updateDependencies");
 
 const mode = hasFlag("major", process.argv)
@@ -7,4 +8,8 @@ const mode = hasFlag("major", process.argv)
         ? "patch"
         : "minor";
 
-updateDependencies(mode);
+const config = {
+    mode,
+};
+
+updateDependencies(config);

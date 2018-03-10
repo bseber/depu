@@ -1,6 +1,6 @@
 const exec = require("./shell-exec");
 
-module.exports = async function updateDependencies(mode = "minor") {
+module.exports = async function updateDependencies(config) {
     const data = await getOutdated();
     const dependencies = [];
     const devDependencies = [];
@@ -30,7 +30,9 @@ function getOutdated() {
         .then(data => Object.entries(data).map(([moduleName, info]) => ({ moduleName, ...info })));
 }
 
-function getToInstallVersion(mode = "minor", entry) {
+function getToInstallVersion(config, entry) {
+    const { mode } = config;
+
     if (mode === "major") {
         return Promise.resolve(entry.latest);
     }
