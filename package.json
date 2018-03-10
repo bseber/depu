@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "description": "automatically update your dependencies",
   "main": "src/index.js",
-  "bin": "./bin/cli.js",
+  "bin": {
+    "depu": "./bin/cli.js"
+  },
   "scripts": {
     "release": "np",
     "lint": "eslint src",
@@ -27,5 +29,13 @@
     "jest": "22.4.2",
     "np": "2.20.1",
     "prettier": "1.11.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bseber/depu.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bseber/depu/issues"
+  },
+  "homepage": "https://github.com/bseber/depu#readme"
 }
