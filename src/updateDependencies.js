@@ -38,7 +38,18 @@ module.exports = async function updateDependencies(config) {
 };
 
 async function getOutdated() {
-  const { stdout: response } = await exec("npm outdated --depth=0 -l --json");
+  let response;
+  try {
+    const { stdout } = await exec("npm outdated --depth=0 -l --json");
+    response = stdout;
+  } catch ({ error, stdout, stderr }) {
+    // `npm outdated` exits with 1 when there are outdated packages
+    // therefore we have to handle this case
+    // since we want to update these packages later
+    if (stdout) {
+      response = stdout;
+    }
+  }
   const data = JSON.parse(response);
   return Object.entries(data).map(([moduleName, info]) => ({
     moduleName,

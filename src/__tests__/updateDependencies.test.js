@@ -18,6 +18,36 @@ describe("updateDependencies", () => {
     expect(exec).toHaveBeenCalledWith("npm outdated --depth=0 -l --json");
   });
 
+  it("ignores 'npm outdated' error sigint when there is stdout", async () => {
+    expect.assertions(2);
+
+    const outdatedResponse = {
+      moduleA: {
+        latest: "3.0.0",
+        wanted: "2.0.0",
+        type: "dependencies",
+      },
+    };
+    exec.mockImplementation(command => {
+      if (/^npm outdated/.test(command)) {
+        return rejectExec(
+          new Error("sigint is 1 when there are outdated packages"),
+          JSON.stringify(outdatedResponse),
+        );
+      }
+      return Promise.resolve();
+    });
+
+    const config = {
+      mode: "major",
+    };
+
+    await updateDependencies(config);
+    const mockCalls = exec.mock.calls;
+    expect(mockCalls[0][0]).toEqual("npm outdated --depth=0 -l --json");
+    expect(mockCalls[1][0]).toEqual("npm install --save moduleA@3.0.0");
+  });
+
   it("updates patch version", async () => {
     expect.assertions(6);
 
@@ -231,5 +261,9 @@ describe("updateDependencies", () => {
 
   function resolveExec(stdout) {
     return Promise.resolve({ stdout });
+  }
+
+  function rejectExec(error, stdout) {
+    return Promise.reject({ error, stdout });
   }
 });
