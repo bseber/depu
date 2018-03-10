@@ -35,7 +35,9 @@ module.exports = async function updateDependencies(config) {
     );
   }
   if (dependencies.length !== 0 || devDependencies.length !== 0) {
-    await exec("git commit -am 'updated dependencies'");
+    await exec("git add package.json");
+    await exec("git add package-lock.json");
+    await exec("git commit -m 'updated dependencies'");
     return Promise.resolve([...dependencies, ...devDependencies]);
   }
 };

@@ -9,6 +9,7 @@ describe("updateDependencies", () => {
   // eslint-disable-next-line jest/no-hooks
   afterEach(() => {
     jest.resetAllMocks();
+    semver.valid.mock && semver.valid.mockRestore();
   });
 
   it("does nothing when there are no dependencies to update", () => {
@@ -287,6 +288,34 @@ describe("updateDependencies", () => {
     expect(exec).toHaveBeenCalledTimes(1);
     expect(semver.valid).toHaveBeenCalledTimes(1);
     expect(semver.valid).toHaveBeenCalledWith("linked");
+  });
+
+  it("commits package.json and package-lock.json", async () => {
+    expect.assertions(3);
+
+    const outdatedResponse = {
+      moduleA: {
+        latest: "3.0.0",
+        wanted: "2.0.0",
+        type: "dependencies",
+      },
+    };
+    exec.mockImplementation(command => {
+      if (/^npm outdated/.test(command)) {
+        return resolveExec(JSON.stringify(outdatedResponse));
+      }
+      return Promise.resolve();
+    });
+
+    const config = {
+      mode: "major",
+    };
+
+    await updateDependencies(config);
+    const mockCalls = exec.mock.calls;
+    expect(mockCalls[2][0]).toEqual("git add package.json");
+    expect(mockCalls[3][0]).toEqual("git add package-lock.json");
+    expect(mockCalls[4][0]).toEqual("git commit -m 'updated dependencies'");
   });
 
   function resolveExec(stdout) {
