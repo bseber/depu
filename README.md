@@ -1,5 +1,7 @@
 # depu
 
+[![build status][travis-image]][travis-url]
+
 automatically update dependencies of your NodeJS application
 
 ## Usage
@@ -17,3 +19,6 @@ depu will
 ## License
 
 MIT
+
+[travis-image]: https://img.shields.io/travis/bseber/depu.svg?style=flat-square
+[travis-url]: https://travis-ci.org/bseber/depu
