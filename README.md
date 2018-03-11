@@ -1,6 +1,7 @@
 # depu
 
 [![build status][travis-image]][travis-url]
+[![coverage status][codecov-image]][codecov-url]
 
 automatically update dependencies of your NodeJS application
 
@@ -22,3 +23,5 @@ MIT
 
 [travis-image]: https://img.shields.io/travis/bseber/depu.svg?style=flat-square
 [travis-url]: https://travis-ci.org/bseber/depu
+[codecov-image]: https://img.shields.io/codecov/c/github/bseber/depu.svg?style=flat-square
+[codecov-url]: https://codecov.io/gh/bseber/depu

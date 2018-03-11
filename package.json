@@ -36,5 +36,15 @@
   "bugs": {
     "url": "https://github.com/bseber/depu/issues"
   },
-  "homepage": "https://github.com/bseber/depu#readme"
+  "homepage": "https://github.com/bseber/depu#readme",
+  "jest": {
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!**/node_modules/**",
+      "!**/__tests__/**",
+      "!**/__mocks__/**"
+    ]
+  }
 }
