@@ -1,5 +1,4 @@
 const semver = require("semver");
-const logger = require("./logger");
 const exec = require("./shell-exec");
 
 module.exports = async function updateDependencies(config) {
