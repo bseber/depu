@@ -3,40 +3,10 @@ const exec = require("./shell-exec");
 
 module.exports = async function updateDependencies(config) {
   const data = await getOutdated();
-  const dependencies = [];
-  const devDependencies = [];
-  for (const entry of data) {
-    if (semver.valid(entry.wanted)) {
-      if (!config.prefix || entry.moduleName.startsWith(config.prefix)) {
-        const install = await getToInstallVersion(config, entry);
-        if (entry.type === "devDependencies") {
-          devDependencies.push({ ...entry, install });
-        } else {
-          dependencies.push({ ...entry, install });
-        }
-      }
-    }
-  }
-  if (dependencies.length !== 0) {
-    await exec(
-      dependencies.reduce(
-        (command, info) => `${command} ${info.moduleName}@${info.install}`,
-        "npm install --save",
-      ),
-    );
-  }
-  if (devDependencies.length !== 0) {
-    await exec(
-      devDependencies.reduce(
-        (command, info) => `${command} ${info.moduleName}@${info.install}`,
-        "npm install --save-dev",
-      ),
-    );
-  }
+  const { dependencies, devDependencies } = await getUpdateable(data, config);
+  await doUpdate(dependencies, devDependencies);
   if (dependencies.length !== 0 || devDependencies.length !== 0) {
-    await exec("git add package.json");
-    await exec("git add package-lock.json");
-    await exec("git commit -m 'updated dependencies'");
+    await doCommit();
     return Promise.resolve([...dependencies, ...devDependencies]);
   }
 };
@@ -61,6 +31,24 @@ async function getOutdated() {
   }));
 }
 
+async function getUpdateable(data, config) {
+  const dependencies = [];
+  const devDependencies = [];
+  for (const entry of data) {
+    if (semver.valid(entry.wanted)) {
+      if (!config.prefix || entry.moduleName.startsWith(config.prefix)) {
+        const install = await getToInstallVersion(config, entry);
+        if (entry.type === "devDependencies") {
+          devDependencies.push({ ...entry, install });
+        } else {
+          dependencies.push({ ...entry, install });
+        }
+      }
+    }
+  }
+  return { dependencies, devDependencies };
+}
+
 async function getToInstallVersion(config, entry) {
   const { mode } = config;
 
@@ -76,4 +64,29 @@ async function getToInstallVersion(config, entry) {
   );
   const versions = JSON.parse(response);
   return versions[versions.length - 1];
+}
+
+async function doUpdate(dependencies, devDependencies) {
+  if (dependencies.length !== 0) {
+    await exec(
+      dependencies.reduce(
+        (command, info) => `${command} ${info.moduleName}@${info.install}`,
+        "npm install --save",
+      ),
+    );
+  }
+  if (devDependencies.length !== 0) {
+    await exec(
+      devDependencies.reduce(
+        (command, info) => `${command} ${info.moduleName}@${info.install}`,
+        "npm install --save-dev",
+      ),
+    );
+  }
+}
+
+async function doCommit() {
+  await exec("git add package.json");
+  await exec("git add package-lock.json");
+  await exec("git commit -m 'updated dependencies'");
 }
