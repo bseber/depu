@@ -1,16 +1,6 @@
 const semver = require("semver");
 const exec = require("./shell-exec");
 
-module.exports = async function updateDependencies(config) {
-  const data = await getOutdated();
-  const { dependencies, devDependencies } = await getUpdateable(data, config);
-  await doUpdate(dependencies, devDependencies);
-  if (dependencies.length !== 0 || devDependencies.length !== 0) {
-    await doCommit();
-    return Promise.resolve([...dependencies, ...devDependencies]);
-  }
-};
-
 async function getOutdated() {
   let response;
   try {
@@ -90,3 +80,10 @@ async function doCommit() {
   await exec("git add package-lock.json");
   await exec("git commit -m 'updated dependencies'");
 }
+
+module.exports = {
+  getOutdated,
+  getUpdateable,
+  doUpdate,
+  doCommit,
+};

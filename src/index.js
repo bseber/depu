@@ -3,7 +3,12 @@ const hasFlag = require("has-flag");
 const parseArgs = require("minimist");
 const columnify = require("columnify");
 const logger = require("./logger");
-const updateDependencies = require("./updateDependencies");
+const {
+  doCommit,
+  doUpdate,
+  getOutdated,
+  getUpdateable,
+} = require("./updateDependencies");
 
 const LINE_BREAK = os.EOL;
 
@@ -17,6 +22,16 @@ const config = {
   mode,
   prefix: args.prefix || "",
 };
+
+async function updateDependencies() {
+  const data = await getOutdated();
+  const { dependencies, devDependencies } = await getUpdateable(data, config);
+  await doUpdate(dependencies, devDependencies);
+  if (dependencies.length !== 0 || devDependencies.length !== 0) {
+    await doCommit();
+    return Promise.resolve([...dependencies, ...devDependencies]);
+  }
+}
 
 updateDependencies(config)
   .then(dependencies => {
