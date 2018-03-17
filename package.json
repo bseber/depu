@@ -1,6 +1,6 @@
 {
   "name": "depu",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "automatically update your dependencies",
   "main": "src/index.js",
   "bin": {
