@@ -17,6 +17,7 @@
   "dependencies": {
     "columnify": "1.5.4",
     "has-flag": "3.0.0",
+    "listr": "0.13.0",
     "minimist": "1.2.0",
     "semver": "5.5.0"
   },
