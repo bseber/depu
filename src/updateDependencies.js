@@ -18,12 +18,7 @@ async function getOutdated() {
       response = stdout;
     }
   }
-  // 'npm outdated' checks the existing dependencies in node_modules directory
-  // and returns 'nothing to update' if the latest version is installed already
-  // despite the outdated version in package.json
-  // therefore we have to handle undefined 'response'
-  // TODO consider deleting node_modules directory
-  const data = response ? JSON.parse(response) : {};
+  const data = JSON.parse(response);
   return Object.entries(data).map(([moduleName, info]) => ({
     moduleName,
     ...info,

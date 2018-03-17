@@ -112,24 +112,6 @@ describe("updateDependencies", () => {
       expect(exec).toHaveBeenCalledTimes(1);
       expect(exec).toHaveBeenCalledWith("npm outdated --depth=0 -l --json");
     });
-
-    it("returns empty list when node_modules directory contains latest versions", async () => {
-      expect.assertions(1);
-
-      exec.mockImplementation(command => {
-        if (/^npm outdated/.test(command)) {
-          return resolveExec("");
-        }
-        return Promise.resolve();
-      });
-
-      const config = {
-        mode: "patch",
-      };
-
-      const outdated = await getOutdated(config);
-      expect(outdated).toEqual([]);
-    });
   });
 
   describe("getUpdateable", () => {
