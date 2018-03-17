@@ -65,6 +65,7 @@ async function getToInstallVersion(config, entry) {
     "--json",
   ]);
   const versions = JSON.parse(response);
+  versions.sort(semver.compare);
   return versions[versions.length - 1];
 }
 

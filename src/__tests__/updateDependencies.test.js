@@ -459,6 +459,55 @@ describe("updateDependencies", () => {
         devDependencies: [],
       });
     });
+
+    it("sorts 'npm version' response to extract the latest version", async () => {
+      expect.assertions(1);
+
+      const data = [
+        {
+          moduleName: "moduleB",
+          latest: "4.0.0",
+          wanted: "2.4.5",
+          type: "dependencies",
+        },
+      ];
+      const viewResponse = {
+        moduleB: [
+          "2.4.8",
+          "2.4.9",
+          "2.0.1",
+          "2.0.2",
+          "2.4.5",
+          "2.5.0",
+          "2.2.0",
+        ],
+      };
+      exec.mockImplementation((cmd, args) => {
+        const command = `${cmd} ${args.join(" ")}`;
+        if (/^npm view/.test(command)) {
+          return resolveExec(JSON.stringify(viewResponse.moduleB));
+        }
+        return Promise.resolve();
+      });
+
+      const config = {
+        mode: "minor",
+      };
+
+      const actual = await getUpdateable(data, config);
+      expect(actual).toEqual({
+        dependencies: [
+          {
+            install: "2.5.0",
+            latest: "4.0.0",
+            moduleName: "moduleB",
+            type: "dependencies",
+            wanted: "2.4.5",
+          },
+        ],
+        devDependencies: [],
+      });
+    });
   });
 
   describe("doUpdate", () => {
