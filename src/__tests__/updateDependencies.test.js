@@ -4,6 +4,7 @@ jest.mock("../shell-exec", () => jest.fn((/*command*/) => Promise.resolve()));
 const semver = require("semver");
 const exec = require("../shell-exec");
 const {
+  cleanupNodeModules,
   getUpdateable,
   getOutdated,
   doUpdate,
@@ -15,6 +16,16 @@ describe("updateDependencies", () => {
   afterEach(() => {
     jest.resetAllMocks();
     semver.valid.mock && semver.valid.mockRestore();
+  });
+
+  describe("cleanupNodeModules", () => {
+    it("invokes 'npm prune'", async () => {
+      expect.assertions(3);
+      expect(exec).not.toHaveBeenCalled();
+      cleanupNodeModules();
+      expect(exec).toHaveBeenCalledTimes(1);
+      expect(exec).toHaveBeenCalledWith("npm", ["prune"]);
+    });
   });
 
   describe("getOutdated", () => {

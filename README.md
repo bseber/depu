@@ -12,6 +12,7 @@ npx depu [--major|minor|patch] [--prefix="@myNamespace"]
 ```
 
 depu will
+* cleanup node_modules to ensure dependencies are matching package.json (`npm prune`)
 * look for outdated packages (`npm outdated`)
 * look for available versions (`npm view myPackage version`)
 * install newer packages with `npm install myPackage@1.2.3` which also updates the package.json

@@ -5,6 +5,7 @@ const columnify = require("columnify");
 const Listr = require("listr");
 const logger = require("./logger");
 const {
+  cleanupNodeModules,
   doCommit,
   doUpdate,
   getOutdated,
@@ -25,6 +26,12 @@ const config = {
 };
 
 const tasks = new Listr([
+  {
+    title: "cleaning up node_modules directory",
+    task: async () => {
+      await cleanupNodeModules();
+    },
+  },
   {
     title: "get outdated dependencies",
     task: async ctx => {

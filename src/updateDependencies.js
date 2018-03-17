@@ -1,6 +1,10 @@
 const semver = require("semver");
 const exec = require("./shell-exec");
 
+async function cleanupNodeModules() {
+  await exec("npm prune");
+}
+
 async function getOutdated() {
   let response;
   try {
@@ -87,6 +91,7 @@ async function doCommit() {
 }
 
 module.exports = {
+  cleanupNodeModules,
   getOutdated,
   getUpdateable,
   doUpdate,
