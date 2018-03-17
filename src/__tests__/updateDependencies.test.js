@@ -1,8 +1,10 @@
 jest.mock("../logger");
-jest.mock("../shell-exec", () => jest.fn((/*command*/) => Promise.resolve()));
+jest.mock("execa", () =>
+  jest.fn((/*command, arguments*/) => Promise.resolve()),
+);
 
 const semver = require("semver");
-const exec = require("../shell-exec");
+const exec = require("execa");
 const {
   cleanupNodeModules,
   getUpdateable,
@@ -50,7 +52,8 @@ describe("updateDependencies", () => {
         },
       };
 
-      exec.mockImplementation(command => {
+      exec.mockImplementation((cmd, args) => {
+        const command = `${cmd} ${args.join(" ")}`;
         if (/^npm outdated/.test(command)) {
           return resolveExec(JSON.stringify(outdatedResponse));
         }
@@ -94,7 +97,8 @@ describe("updateDependencies", () => {
           type: "dependencies",
         },
       };
-      exec.mockImplementation(command => {
+      exec.mockImplementation((cmd, args) => {
+        const command = `${cmd} ${args.join(" ")}`;
         if (/^npm outdated/.test(command)) {
           return rejectExec(
             new Error("sigint is 1 when there are outdated packages"),
@@ -110,7 +114,12 @@ describe("updateDependencies", () => {
 
       await getOutdated(config);
       expect(exec).toHaveBeenCalledTimes(1);
-      expect(exec).toHaveBeenCalledWith("npm outdated --depth=0 -l --json");
+      expect(exec).toHaveBeenCalledWith("npm", [
+        "outdated",
+        "--depth=0",
+        "-l",
+        "--json",
+      ]);
     });
   });
 
@@ -175,7 +184,7 @@ describe("updateDependencies", () => {
     });
 
     it("returns dev-/dependency data for minor update", async () => {
-      expect.assertions(4);
+      expect.assertions(7);
 
       const data = [
         {
@@ -202,7 +211,8 @@ describe("updateDependencies", () => {
         moduleB: ["1.0.0", "1.1.0"],
         devModule: ["42.0.0", "42.1.0", "42.2.0"],
       };
-      exec.mockImplementation(command => {
+      exec.mockImplementation((cmd, args) => {
+        const command = `${cmd} ${args.join(" ")}`;
         if (/^npm view/.test(command)) {
           if (/moduleA/.test(command)) {
             return resolveExec(JSON.stringify(viewResponse.moduleA));
@@ -221,9 +231,27 @@ describe("updateDependencies", () => {
 
       const actual = await getUpdateable(data, config);
       const mockCalls = exec.mock.calls;
-      expect(mockCalls[0][0]).toEqual("npm view moduleA@2 version --json");
-      expect(mockCalls[1][0]).toEqual("npm view moduleB@1 version --json");
-      expect(mockCalls[2][0]).toEqual("npm view devModule@42 version --json");
+      expect(mockCalls[0][0]).toEqual("npm");
+      expect(mockCalls[0][1]).toEqual([
+        "view",
+        "moduleA@2",
+        "version",
+        "--json",
+      ]);
+      expect(mockCalls[1][0]).toEqual("npm");
+      expect(mockCalls[1][1]).toEqual([
+        "view",
+        "moduleB@1",
+        "version",
+        "--json",
+      ]);
+      expect(mockCalls[2][0]).toEqual("npm");
+      expect(mockCalls[2][1]).toEqual([
+        "view",
+        "devModule@42",
+        "version",
+        "--json",
+      ]);
       expect(actual).toEqual({
         dependencies: [
           {
@@ -254,7 +282,7 @@ describe("updateDependencies", () => {
     });
 
     it("returns dev-/dependency data for patch update", async () => {
-      expect.assertions(4);
+      expect.assertions(7);
 
       const data = [
         {
@@ -282,7 +310,8 @@ describe("updateDependencies", () => {
         devModule: ["42.0.0", "42.0.1"],
       };
 
-      exec.mockImplementation(command => {
+      exec.mockImplementation((cmd, args) => {
+        const command = `${cmd} ${args.join(" ")}`;
         if (/^npm view/.test(command)) {
           if (/moduleA/.test(command)) {
             return resolveExec(JSON.stringify(viewResponse.moduleA));
@@ -301,11 +330,27 @@ describe("updateDependencies", () => {
 
       const actual = await getUpdateable(data, config);
       const mockCalls = exec.mock.calls;
-      expect(mockCalls[0][0]).toEqual("npm view moduleA@2.0.x version --json");
-      expect(mockCalls[1][0]).toEqual("npm view moduleB@1.0.x version --json");
-      expect(mockCalls[2][0]).toEqual(
-        "npm view devModule@42.0.x version --json",
-      );
+      expect(mockCalls[0][0]).toEqual("npm");
+      expect(mockCalls[0][1]).toEqual([
+        "view",
+        "moduleA@2.0.x",
+        "version",
+        "--json",
+      ]);
+      expect(mockCalls[1][0]).toEqual("npm");
+      expect(mockCalls[1][1]).toEqual([
+        "view",
+        "moduleB@1.0.x",
+        "version",
+        "--json",
+      ]);
+      expect(mockCalls[2][0]).toEqual("npm");
+      expect(mockCalls[2][1]).toEqual([
+        "view",
+        "devModule@42.0.x",
+        "version",
+        "--json",
+      ]);
       expect(actual).toEqual({
         dependencies: [
           {
@@ -380,7 +425,8 @@ describe("updateDependencies", () => {
         moduleB: ["1.0.0", "1.1.0"],
         devModule: ["42.0.0", "42.1.0", "42.2.0"],
       };
-      exec.mockImplementation(command => {
+      exec.mockImplementation((cmd, args) => {
+        const command = `${cmd} ${args.join(" ")}`;
         if (/^npm view/.test(command)) {
           return resolveExec(JSON.stringify(viewResponse.moduleA));
         }
@@ -394,9 +440,12 @@ describe("updateDependencies", () => {
 
       const actual = await getUpdateable(data, config);
       expect(exec).toHaveBeenCalledTimes(1);
-      expect(exec).toHaveBeenCalledWith(
-        "npm view @myNamespace/moduleA@2 version --json",
-      );
+      expect(exec).toHaveBeenCalledWith("npm", [
+        "view",
+        "@myNamespace/moduleA@2",
+        "version",
+        "--json",
+      ]);
       expect(actual).toEqual({
         dependencies: [
           {
@@ -441,12 +490,17 @@ describe("updateDependencies", () => {
         },
       ];
       await doUpdate(dependencies, devDependencies);
-      expect(exec).toHaveBeenCalledWith(
-        "npm install --save moduleA@3.0.0 moduleB@4.0.0",
-      );
-      expect(exec).toHaveBeenCalledWith(
-        "npm install --save-dev devModule@1337.0.0",
-      );
+      expect(exec).toHaveBeenCalledWith("npm", [
+        "install",
+        "--save",
+        "moduleA@3.0.0",
+        "moduleB@4.0.0",
+      ]);
+      expect(exec).toHaveBeenCalledWith("npm", [
+        "install",
+        "--save-dev",
+        "devModule@1337.0.0",
+      ]);
     });
 
     it("does nothing when lists are empty", async () => {
@@ -460,13 +514,18 @@ describe("updateDependencies", () => {
 
   describe("doCommit", () => {
     it("commits package.json and package-lock.json", async () => {
-      expect.assertions(3);
+      expect.assertions(6);
       await doCommit();
-      expect(exec.mock.calls[0][0]).toEqual("git add package.json");
-      expect(exec.mock.calls[1][0]).toEqual("git add package-lock.json");
-      expect(exec.mock.calls[2][0]).toEqual(
-        "git commit -m 'updated dependencies'",
-      );
+      expect(exec.mock.calls[0][0]).toEqual("git");
+      expect(exec.mock.calls[0][1]).toEqual(["add", "package.json"]);
+      expect(exec.mock.calls[1][0]).toEqual("git");
+      expect(exec.mock.calls[1][1]).toEqual(["add", "package-lock.json"]);
+      expect(exec.mock.calls[2][0]).toEqual("git");
+      expect(exec.mock.calls[2][1]).toEqual([
+        "commit",
+        "-m",
+        "updated dependencies",
+      ]);
     });
   });
 

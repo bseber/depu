@@ -16,6 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "columnify": "1.5.4",
+    "execa": "0.10.0",
     "has-flag": "3.0.0",
     "listr": "0.13.0",
     "minimist": "1.2.0",
