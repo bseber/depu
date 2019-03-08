@@ -91,7 +91,7 @@ async function doCommit() {
   const commit = async msg => exec("git", ["commit", "-m", msg]);
   await add("package.json");
   await add("package-lock.json");
-  await commit("updated dependencies");
+  await commit("update dependencies");
 }
 
 module.exports = {
